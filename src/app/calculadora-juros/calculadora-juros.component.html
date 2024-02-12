@@ -1,0 +1,62 @@
+<form [formGroup]="form" id="form">
+
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="inputGroup-sizing-default">Inicial</span>
+    <input type="number" formControlName="inicial" class="form-control">
+  </div> 
+    
+    <div formGroupName="periodo" class="input-group mb-3">
+      <span class="input-group-text" id="inputGroup-sizing-default">Período</span>
+        <input type="number" formControlName="valor" class="form-control">         
+        <select formControlName="tipoPeriodo" class="btn btn-outline-secondary dropdown-toggle">
+            <option [ngValue]="1" >Meses</option>
+            <option [ngValue]="2">Anos</option>
+          </select> <br>
+    </div>
+
+    <div formGroupName="juros" class="input-group mb-3">
+      <span class="input-group-text" id="inputGroup-sizing-default">Juros</span>
+        <input type="number" formControlName="valor" class="form-control"> 
+        <select formControlName="tipoPeriodo" class="btn btn-outline-secondary dropdown-toggle">
+            <option [ngValue]="1">Por Mês</option>
+            <option [ngValue]="2">Por Ano</option>
+        </select> 
+    </div>
+
+    <div formGroupName="aporte"class="input-group mb-3">
+        <span class="input-group-text">Aporte</span>
+        <input type="number" formControlName="valor" class="form-control"> 
+        <select class="btn btn-outline-secondary dropdown-toggle" formControlName="mes">
+          <option *ngFor="let mes of meses" [ngValue]="mes.valor" >{{ mes.nome }}</option>
+        </select>                   
+        <button type="button" (click)="addAporte()" class="btn btn-primary" >Adicionar</button>
+    </div>
+
+    <h2>Aportes</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" class="col-2">#</th>
+            <th scope="col" class="col-2">Aporte</th>
+            <th scope="col" class="col-2">Período</th>
+            <th scope="col" class="col-2">Remover</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          <tr *ngFor="let aporte of aportes; let i=index">
+            <th scope="row">{{i+1}}</th>
+            <td>{{ aporte.valor }}</td>
+            <td>{{ getNomeMes(aporte.mes) }}</td>
+            <td><button type="submit" (click)="removeAporte(i)" class="btn btn-danger"><mat-icon>delete_forever</mat-icon></button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br>
+      <button type="submit" (click) = "calcular()" [disabled]="!form.valid" class="btn btn-primary">Calcular</button>
+
+  </form>
+
+
+
+ 
