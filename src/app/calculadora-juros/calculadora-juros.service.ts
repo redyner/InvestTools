@@ -29,17 +29,16 @@ export class CalculadoraJurosService {
 
   AplicaAportesETaxaPorPeriodo(request: CalcularRequest, response: CalcularResponse) {
     if ((request.periodo !== null && request.periodo !== undefined) && 
-        (request.periodo.valor !== null && request.periodo.valor !== undefined) &&
-        (request.juros !== null && request.juros !== undefined) && 
-        (request.juros.valor !== null && request.juros.valor !== undefined)) {
+        (request.juros !== null && request.juros !== undefined)) {
+
       let mesAtual = new Date().getMonth() + 1;
 
-      this.CalculaPeriodo(request.periodo);
-      this.CalculaTaxa(request.juros);
+      const periodo = this.CalculaPeriodo(request.periodo);
+      const juros = this.CalculaTaxa(request.juros);
 
       let aporteMensal = request.aportes.find(a => a.mes === 0);
 
-        for (let i = 1; i <= request.periodo.valor; i++) {
+        for (let i = 1; i <= periodo; i++) {
             let aporte = request.aportes.find(a => a.mes === mesAtual);
 
             if (aporte)
@@ -47,11 +46,9 @@ export class CalculadoraJurosService {
             else if (aporteMensal)
                 this.AdicionarAporte(response, aporteMensal.valor);
 
-            if (request.juros.valor !== null && request.juros.valor !== undefined) {
-            response.juros += response.total * request.juros.valor;
+            response.juros += response.total * juros;
 
-            response.total *= 1 + request.juros.valor;
-            }
+            response.total *= 1 + juros;
 
             if (mesAtual === 12)
                 mesAtual = 0;
@@ -59,7 +56,7 @@ export class CalculadoraJurosService {
             mesAtual++;        
       }
 
-      response.rendaMensal = response.total * request.juros.valor;
+      response.rendaMensal = response.total * juros;
     }
   }
 
@@ -68,19 +65,22 @@ export class CalculadoraJurosService {
       response.investimento += valor;
   }
 
-  CalculaTaxa(juros : Juros) {
+  CalculaTaxa(juros : Juros) : number{
     if (juros.valor !== null && juros.valor !== undefined) {
         if (juros.tipoPeriodo === 2)
-            juros.valor = juros.valor / 12 / 100;
+            return juros.valor / 12 / 100;
         else
-            juros.valor /= 100;
+            return juros.valor / 100;
     }
+    return 0;
 }
 
 
-  CalculaPeriodo(periodo: Periodo) {
+  CalculaPeriodo(periodo: Periodo) : number {
       if (periodo.tipoPeriodo === 2 && periodo.valor !== null && periodo.valor !== undefined)
-          periodo.valor *= 12;
+          return periodo.valor * 12;
+      
+      return periodo.valor ?? 0;
   }
 
   AjusteCasasDecimais(response: CalcularResponse) {
